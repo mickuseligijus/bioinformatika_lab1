@@ -196,16 +196,23 @@ def get_frequency(pattern, filtered_frame_list, get_sequence):
         sequence = get_sequence(filtered,frame)
         acc = concat_list(acc, sequence)
 
-    frenquencies = []
+    amounts = []
 
     for p in pattern:
         counter = 0
         for pp in acc:
             if p == pp:
                 counter = counter +1
-        frenquencies.append((p,counter))
+        amounts.append((p,counter))
     
-    return frenquencies
+    total = sum (x[1] for x in amounts)
+
+    frequencies = []
+    for x in amounts:
+        (n,a) = x
+        frequencies.append((n,a/total))
+    
+    return frequencies
 
 def concat_list(list1, list2):
     for i in list2 :
@@ -269,7 +276,7 @@ def calculate_distance(seq_frequency):
                 (name3,fr3) = dicodon1[ii]
                 (name4,fr4) = dicodon2[ii]
 
-                distanceDicodons = (abs(fr3-fr4))
+                distanceDicodons = ((fr3-fr4)**2)
                 sumDicodons = sumDicodons + distanceDicodons
 
             row.append(sum**1/2)
@@ -293,8 +300,8 @@ def print_matrix(matrix):
 
 def print_distribution(seq_fr):
     print("\n")
-    most_common(seq_fr)
-    print("\n")
+    # most_common(seq_fr)
+    # print("\n")
     for s in seq_fr:
         (info, codons, dicodons) = s
         co = sorted(codons, key=lambda tup: tup[1], reverse=True)
@@ -303,37 +310,37 @@ def print_distribution(seq_fr):
         print(info, dico[0], dico[1], dico[2])
     
 
-def most_common(list):
-    codon_list = []
-    dicodon_list = []
+# def most_common(list):
+#     codon_list = []
+#     dicodon_list = []
 
-    for codon in codons:
-        accCodon = 0
-        for l in list:
-            (_, co, _) = l
-            for c in co:
-                (name, amountCodon) = c
-                if name == codon:
-                    accCodon += amountCodon
-        codon_list.append((codon,accCodon))
+#     for codon in codons:
+#         accCodon = 0
+#         for l in list:
+#             (_, co, _) = l
+#             for c in co:
+#                 (name, amountCodon) = c
+#                 if name == codon:
+#                     accCodon += amountCodon
+#         codon_list.append((codon,accCodon))
 
-    for dicodon in dicodons:
-        accDicodon = 0
-        for l in list:
-            (_, _, dico) = l
-            for d in dico:
-                (name, amountDicoodon) = d
-                if name == dicodon:
-                    accDicodon += amountDicoodon
-        dicodon_list.append((dicodon,accDicodon))
+#     for dicodon in dicodons:
+#         accDicodon = 0
+#         for l in list:
+#             (_, _, dico) = l
+#             for d in dico:
+#                 (name, amountDicoodon) = d
+#                 if name == dicodon:
+#                     accDicodon += amountDicoodon
+#         dicodon_list.append((dicodon,accDicodon))
 
-    co = sorted(codon_list, key=lambda tup: tup[1], reverse=True)
-    dico =sorted(dicodon_list, key=lambda tup: tup[1], reverse=True)
+#     co = sorted(codon_list, key=lambda tup: tup[1], reverse=True)
+#     dico =sorted(dicodon_list, key=lambda tup: tup[1], reverse=True)
 
-    print("codons")
-    print(co[0], co[1], co[2])
-    print("dicodons")
-    print(dico[0], dico[1], dico[2])
+#     print("codons")
+#     print(co[0], co[1], co[2])
+#     print("dicodons")
+#     print(dico[0], dico[1], dico[2])
 
 
 
@@ -367,7 +374,9 @@ for location in data_sources:
     filtered_reading_frames = combine_methods(seq)
     codons_frequency = get_frequency(codons,filtered_reading_frames,get_codons_sequence)
     dicodons_frequency = get_frequency(dicodons,filtered_reading_frames,get_dicodons_sequences)
-    seq_frequency.append((info,codons_frequency,dicodons_frequency))        
+    seq_frequency.append((info,codons_frequency,dicodons_frequency))
+
+
 
 (matrix_codons, matrix_dicodons) = calculate_distance(seq_frequency)
 print_matrix(matrix_codons)
