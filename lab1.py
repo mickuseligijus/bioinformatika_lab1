@@ -165,9 +165,9 @@ def get_dicodons_sequences(filtered_pairs, sequence_frame):
         list.append(l)
 
     dicodons_list_frame = []
-    m = 0
     counter = 0
     temp =""
+
     for l in list:
         for i in l:
             temp += i
@@ -196,21 +196,16 @@ def get_frequency(pattern, filtered_frame_list, get_sequence):
         sequence = get_sequence(filtered,frame)
         acc = concat_list(acc, sequence)
 
-    amounts = []
+    frequencies = []
+    total = len(acc)
 
     for p in pattern:
         counter = 0
         for pp in acc:
             if p == pp:
                 counter = counter +1
-        amounts.append((p,counter))
-    
-    total = sum (x[1] for x in amounts)
-
-    frequencies = []
-    for x in amounts:
-        (n,a) = x
-        frequencies.append((n,a/total))
+        fr = counter/total
+        frequencies.append((p,fr))
     
     return frequencies
 
@@ -257,26 +252,27 @@ def calculate_distance(seq_frequency):
     matrixCodons = []
     matrixDicodons = []
     sum = 0
+    sumDicodons = 0
     for s1 in seq_frequency:
         (info,codon1,dicodon1) = s1
         row = []
         rowDicodons = []
         for s2 in seq_frequency:
-            (info2,codon2,dicodon2) = s2
+            (_,codon2,dicodon2) = s2
             sum = 0
             sumDicodons = 0
             for i in range(len(codon1)):
-                (name1,fr1) = codon1[i]
-                (name2,fr2) = codon2[i]
+                (_,fr1) = codon1[i]
+                (_,fr2) = codon2[i]
 
                 distance = (abs(fr1-fr2))
                 sum = sum + distance
 
             for ii in range(len(dicodon1)):
-                (name3,fr3) = dicodon1[ii]
-                (name4,fr4) = dicodon2[ii]
+                (_,fr3) = dicodon1[ii]
+                (_,fr4) = dicodon2[ii]
 
-                distanceDicodons = ((fr3-fr4)**2)
+                distanceDicodons = (abs(fr3-fr4))
                 sumDicodons = sumDicodons + distanceDicodons
 
             row.append(sum**1/2)
@@ -295,13 +291,11 @@ def print_matrix(matrix):
         (info, values) = row
         print(info, end = ' ')
         for v in values:
-            print(v, end = ' ')
+            print(format(v,".7f"), end = ' ')
         print()
 
 def print_distribution(seq_fr):
     print("\n")
-    # most_common(seq_fr)
-    # print("\n")
     for s in seq_fr:
         (info, codons, dicodons) = s
         co = sorted(codons, key=lambda tup: tup[1], reverse=True)
@@ -309,60 +303,6 @@ def print_distribution(seq_fr):
         print(info, co[0], co[1], co[2])
         print(info, dico[0], dico[1], dico[2])
     
-
-# def most_common(list):
-#     codon_list = []
-#     dicodon_list = []
-
-#     for codon in codons:
-#         accCodon = 0
-#         for l in list:
-#             (_, co, _) = l
-#             for c in co:
-#                 (name, amountCodon) = c
-#                 if name == codon:
-#                     accCodon += amountCodon
-#         codon_list.append((codon,accCodon))
-
-#     for dicodon in dicodons:
-#         accDicodon = 0
-#         for l in list:
-#             (_, _, dico) = l
-#             for d in dico:
-#                 (name, amountDicoodon) = d
-#                 if name == dicodon:
-#                     accDicodon += amountDicoodon
-#         dicodon_list.append((dicodon,accDicodon))
-
-#     co = sorted(codon_list, key=lambda tup: tup[1], reverse=True)
-#     dico =sorted(dicodon_list, key=lambda tup: tup[1], reverse=True)
-
-#     print("codons")
-#     print(co[0], co[1], co[2])
-#     print("dicodons")
-#     print(dico[0], dico[1], dico[2])
-
-
-
-        
-# def max_number(x):
-#     temp = 0
-#     code = ""
-#     previous =""
-#     temp_previous = 0
-#     for i in x:
-#         (a,b) = i
-#         if b>=temp:
-#             temp_previous = temp
-#             previous = code
-#             if temp == 0:
-#                 previous = a
-#                 temp_previous = b
-#             temp = b  
-#             code = a
-
-    
-#     return ((code, temp), (previous,temp_previous))
 
 data_sources = ["data/bacterial1.fasta","data/bacterial2.fasta","data/bacterial3.fasta","data/bacterial4.fasta","data/mamalian1.fasta","data/mamalian2.fasta","data/mamalian3.fasta","data/mamalian4.fasta"]
 
@@ -381,7 +321,7 @@ for location in data_sources:
 (matrix_codons, matrix_dicodons) = calculate_distance(seq_frequency)
 print_matrix(matrix_codons)
 print_matrix(matrix_dicodons)
-print_distribution(seq_frequency)
+# print_distribution(seq_frequency)
 
 
 
